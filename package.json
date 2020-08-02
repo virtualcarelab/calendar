@@ -2,7 +2,7 @@
   "name": "test-calendar",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://leils.github.io/test-calendar",
+  "homepage": "http://virtualcarelab.github.io/calendar",
   "dependencies": {
     "@fullcalendar/daygrid": "^5.2.0",
     "@fullcalendar/google-calendar": "^5.2.0",
