@@ -2,6 +2,7 @@ import React from 'react';
 import FullCalendar from '@fullcalendar/react'
 import './App.css';
 import dayGridPlugin from '@fullcalendar/daygrid'
+import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import googleCalendarPlugin from '@fullcalendar/google-calendar'
 
@@ -33,29 +34,26 @@ export default class App extends React.Component {
 
   render() {
     const { windowWidth } = this.state;
+    const initView = (windowWidth >= 768) ? 'dayGridMonth' : 'listWeek';
 
     return (
       <div>
-        {windowWidth}
         <FullCalendar
           ref={this.calendarRef}
-          plugins={[ dayGridPlugin, interactionPlugin, googleCalendarPlugin ]}
+          plugins={[ dayGridPlugin, interactionPlugin, googleCalendarPlugin, listPlugin ]}
           googleCalendarApiKey={apiKey}
           events={{googleCalendarId: gCalId}}
           height="auto"
-          defaultView='dayGridMonth'
-          windowResize={this.handleCalendarResize}
+          initialView={initView}
+          windowResize={() => {
+            if (windowWidth >= 768) {
+              this.calendarRef.current.getApi().changeView('dayGridMonth');
+            } else {
+              this.calendarRef.current.getApi().changeView('listWeek');
+            }
+          }}
         />
       </div>
     )
   }
-
-  // handleCalendarResize() {
-  //   const { windowWidth } = this.state;
-  //   if (windowWidth >= 768 ) {
-  //       this.calendarRef.changeView('dayGridMonth');
-  //   } else {
-  //       this.calendarRef.changeView('dayGridWeek');
-  //   }
-  // }
 }
