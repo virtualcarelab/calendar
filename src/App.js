@@ -1,5 +1,6 @@
 import React from 'react';
 import FullCalendar from '@fullcalendar/react'
+import tippy from 'tippy.js';
 import './App.css';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
@@ -32,6 +33,10 @@ export default class App extends React.Component {
     window.addEventListener("resize", this.handleResize);
   }
 
+  tooltipData(info) {
+    return 'hELLO' + info.event.extendedProps.description
+  }
+
   render() {
     const { windowWidth } = this.state;
     const initView = (windowWidth >= 768) ? 'dayGridMonth' : 'listWeek';
@@ -45,6 +50,11 @@ export default class App extends React.Component {
           events={{googleCalendarId: gCalId}}
           height="auto"
           initialView={initView}
+          eventDidMount={(info) => {
+            tippy(info.el, {
+              content: this.tooltipData(info),
+            })
+          }}
           windowResize={() => {
             if (windowWidth >= 768) {
               this.calendarRef.current.getApi().changeView('dayGridMonth');
