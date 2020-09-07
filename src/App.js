@@ -6,6 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import googleCalendarPlugin from '@fullcalendar/google-calendar'
+import 'tippy.js/themes/light-border.css';
 
 const apiKey = "AIzaSyBIwJdxiiUocK4yJLF6qLWxkc44-_7tf_0";
 const gCalId = "cns2ghia12k0nhtqgr6sn50aic@group.calendar.google.com";
@@ -34,7 +35,15 @@ export default class App extends React.Component {
   }
 
   tooltipData(info) {
-    return 'hELLO' + info.event.extendedProps.description
+    return (
+      `
+        <p><strong>${info.event.title}</strong></p>
+        <p>
+        ${ info.event.extendedProps.description || 'no description' }
+        </p>
+        <a href='${ info.event.extendedProps.location}'>Location</a>
+      `
+    )
   }
 
   render() {
@@ -53,6 +62,8 @@ export default class App extends React.Component {
           eventDidMount={(info) => {
             tippy(info.el, {
               content: this.tooltipData(info),
+              allowHTML: true,
+              theme: 'light-border'
             })
           }}
           windowResize={() => {
