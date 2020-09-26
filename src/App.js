@@ -1,18 +1,18 @@
 import React from 'react';
 import FullCalendar from '@fullcalendar/react'
-import tippy from 'tippy.js';
 import './App.css';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import googleCalendarPlugin from '@fullcalendar/google-calendar'
-import 'tippy.js/themes/light-border.css';
+import Modal from './components/modal/modal';
 
 const apiKey = "AIzaSyBIwJdxiiUocK4yJLF6qLWxkc44-_7tf_0";
 const gCalId = "cns2ghia12k0nhtqgr6sn50aic@group.calendar.google.com";
 
 export default class App extends React.Component {
   calendarRef = React.createRef();
+  description = null;
   handleResize = (e) => {
     this.setState({
       windowWidth: window.innerWidth
@@ -22,9 +22,22 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      windowWidth: window.innerWidth
+      windowWidth: window.innerWidth,
+      description: null,
+      chosenEvent: null,
+      showModal: false
     };
   }
+
+  showModal = () => {
+    this.setState({ showModal: true });
+    console.log(this.state.showModal);
+  };
+
+  hideModal = () => {
+    this.setState({ showModal: false });
+    console.log(this.state.showModal);
+  };
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
@@ -34,16 +47,12 @@ export default class App extends React.Component {
     window.addEventListener("resize", this.handleResize);
   }
 
-  tooltipData(info) {
-    return (
-      `
-        <p><strong>${info.event.title}</strong></p>
-        <p>
-        ${ info.event.extendedProps.description || 'no description' }
-        </p>
-        <a href='${ info.event.extendedProps.location}'>Location</a>
-      `
-    )
+  selectEvent(info) {
+    this.setState({
+      chosenEvent: info,
+      description: info.event.extendedProps.description
+    });
+    this.showModal();
   }
 
   render() {
@@ -51,7 +60,7 @@ export default class App extends React.Component {
     const initView = (windowWidth >= 768) ? 'dayGridMonth' : 'listWeek';
 
     return (
-      <div>
+      <div className='calendarContainer'>
         <FullCalendar
           ref={this.calendarRef}
           plugins={[ dayGridPlugin, interactionPlugin, googleCalendarPlugin, listPlugin ]}
@@ -59,12 +68,9 @@ export default class App extends React.Component {
           events={{googleCalendarId: gCalId}}
           height="auto"
           initialView={initView}
-          eventDidMount={(info) => {
-            tippy(info.el, {
-              content: this.tooltipData(info),
-              allowHTML: true,
-              theme: 'light-border'
-            })
+          eventClick={(info) => {
+            info.jsEvent.preventDefault()
+            this.selectEvent(info)
           }}
           windowResize={() => {
             if (windowWidth >= 768) {
@@ -74,6 +80,10 @@ export default class App extends React.Component {
             }
           }}
         />
+        <Modal
+          show={this.state.showModal}
+          handleClose={this.hideModal}
+          eventInfo={this.state.chosenEvent}/>
       </div>
     )
   }
